@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+// import React, { Component } from "react";
+import { useState } from "react";
 
 import { Container } from "./Container/Container";
 import { Statistics } from "./Statistics/Statistics";
@@ -7,59 +8,94 @@ import { Section } from "./Section/Section";
 import { Notification } from "./Notification/Notification";
 
 
-export class App extends Component {
+export const App = () => {
   
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0
-  }
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral ] = useState(0);
+  const [bad, setBad] = useState(0);
 
-  // handleFeedback = event => {
-  //   if (event === 'Good') {
-  //     this.setState({ good: this.state.good + 1 });
-  //     console.log(this.state.good);
-  //   } if (event === 'Neutral') {
-  //     this.setState({ neutral: this.state.neutral + 1 });
-  //   } if (event === 'Bad') {
-  //     this.setState({ bad: this.state.bad + 1 });
+// ======================================= case 1 =============================================================================
+  // const feedbacks = ['Good', 'Neutral', 'Bad'];
+
+  // const handleFeedback = feedback => {
+  //   if (feedback === 'Good') {
+  //     setGood(good + 1);
+  //   } else if (feedback === 'Neutral') {
+  //     setNeutral(neutral + 1);
+  //   } else if (feedback === 'Bad') {
+  //     setBad(bad + 1);
   //   }
   // }
+// =============================================================================================================================
 
-  handleFeedback = (feedback) => {
-    this.setState(prevState => ({
-    [feedback]: prevState[feedback] + 1
-    }));
+// ====================================== case 2 ===============================================================================
+
+//   const [feedbacks, setFeedbacks] = useState({
+//     good: 0,
+//     neutral:0,
+//     bad:0,
+// });
+
+//   const {good, neutral, bad} = feedbacks;
+
+//   const handleFeedback = feedback => {
+//     return setFeedbacks(prevState => {
+//       return {
+//         ...prevState,
+//         [feedback]: prevState[feedback] + 1,
+//       };
+//     }, [feedbacks]);
+//   }
+// ==============================================================================================================================
+
+// ===================================== case 3 =================================================================================
+
+  const feedbacks = {good, neutral, bad};
+
+  const handleFeedback = feedback => {
+    switch (feedback) {
+      case 'good':
+        setGood(prevState => prevState + 1);      
+        break;
+
+      case 'neutral':
+        setNeutral(prevState => prevState + 1);
+        break;
+
+      case 'bad':
+        setBad(prevState => prevState + 1);
+        break;
+    
+      default:
+        return;
+    }
   }
+// ==============================================================================================================================
 
-  countTotalFeedback = () => {
-    const{good, neutral, bad} = this.state;
+  const countTotalFeedback = () => {
     return good + neutral + bad;
   }
-
-  countPositiveFeedbackPercentage = () => {
-    const{good} = this.state;
-    let total = this.countTotalFeedback();
-    return parseInt(good /total * 100);
+  let total = countTotalFeedback();
+ 
+  const countPositiveFeedbackPercentage = () => {
+    let total = countTotalFeedback();
+    return Math.round(good /total * 100);
   }
+  let positivePercentage = countPositiveFeedbackPercentage();
 
-  render() {
-    const { good, neutral, bad } = this.state;
-    let total = this.countTotalFeedback();
-    let positivePercentage = this.countPositiveFeedbackPercentage();
-
-    return (
+  
+  return (
       <Container>
         <Section title = 'Please leave feedback'>
           <FeedbackOptions 
-          // options={['Good', 'Neutral', 'Bad']}
-          options={Object.keys(this.state)}
-          onLeaveFeedback={this.handleFeedback}
+            options={Object.keys(feedbacks)}  //for case 2 and 3
+            // options={feedbacks}   //for case 1
+            onLeaveFeedback={handleFeedback}
           />
         </Section>
 
         <Section title="Statistics">
-          { total 
+          { countTotalFeedback()
           ? ( <Statistics 
                 good={good}
                 neutral={neutral}
@@ -73,7 +109,7 @@ export class App extends Component {
       </Container>
       
     )
-  }
+  
 } 
 
 
